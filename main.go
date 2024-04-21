@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"flag"
 	"fmt"
 	"github.com/henomis/lingoose/llm/openai"
 	"github.com/henomis/lingoose/thread"
@@ -10,6 +11,20 @@ import (
 )
 
 func main() {
+	reset := flag.Bool("reset", false, "reset all input key")
+	flag.Parse()
+
+	if *reset {
+		err := deleteKey()
+		if err != nil {
+			fmt.Println(err)
+			fmt.Println("Error deleting key from db")
+			os.Exit(1)
+		}
+		fmt.Println("Successfully deleted api key from db")
+		os.Exit(0)
+	}
+
 	fmt.Println("Welcome to Pirate Bot")
 	fmt.Println("---------------------")
 	err := getOrSetKey()

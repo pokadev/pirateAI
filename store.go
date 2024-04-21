@@ -63,3 +63,27 @@ func getOrSetKey() error {
 	}
 	return nil
 }
+
+func deleteKey() error {
+	db, err := bolt.Open("data.db", 0600, nil)
+	if err != nil {
+		return errors.New("error opening database: " + err.Error())
+	}
+	defer db.Close()
+
+	err = db.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte("MyBucket"))
+		if bucket == nil {
+			return nil
+		}
+		err := bucket.Delete([]byte("OPENAI_API_KEY"))
+		if err != nil {
+			return errors.New("error deleting key from db: " + err.Error())
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
